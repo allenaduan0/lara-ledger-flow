@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('reference', 120)->unique();
             $table->string('description', 255)->nullable();
             $table->foreignUlid('ledger_transaction_id')->nullable()->unique()->constrained('ledger_transactions')->restrictOnDelete();
-            $table->foreignUlid('refunded_transaction_id')->nullable()->unique()->constrained('transactions')->restrictOnDelete();
+            $table->ulid('refunded_transaction_id')->nullable()->unique();
             $table->string('failure_code', 80)->nullable();
             $table->string('failure_message', 255)->nullable();
             $table->timestamp('completed_at')->nullable();
@@ -30,6 +30,10 @@ return new class extends Migration
             $table->foreign('currency_code')->references('code')->on('currencies')->restrictOnDelete();
             $table->index(['initiated_by', 'created_at']);
             $table->index(['status', 'created_at']);
+        });
+
+        Schema::table('transactions', function (Blueprint $table): void {
+            $table->foreign('refunded_transaction_id')->references('id')->on('transactions')->restrictOnDelete();
         });
 
         Schema::create('transaction_status_history', function (Blueprint $table): void {
