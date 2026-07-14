@@ -88,7 +88,7 @@ return new class extends Migration
 
     private function createPostgresTriggers(): void
     {
-        DB::unprepared("CREATE FUNCTION prevent_ledger_entry_mutation() RETURNS trigger AS $$ BEGIN RAISE EXCEPTION 'Ledger entries are immutable'; END; $$ LANGUAGE plpgsql");
+        DB::unprepared("CREATE OR REPLACE FUNCTION prevent_ledger_entry_mutation() RETURNS trigger AS $$ BEGIN RAISE EXCEPTION 'Ledger entries are immutable'; END; $$ LANGUAGE plpgsql");
         DB::unprepared('CREATE TRIGGER ledger_entries_no_update BEFORE UPDATE ON ledger_entries FOR EACH ROW EXECUTE FUNCTION prevent_ledger_entry_mutation()');
         DB::unprepared('CREATE TRIGGER ledger_entries_no_delete BEFORE DELETE ON ledger_entries FOR EACH ROW EXECUTE FUNCTION prevent_ledger_entry_mutation()');
     }
